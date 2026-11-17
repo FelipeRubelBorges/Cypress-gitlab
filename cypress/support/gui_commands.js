@@ -1,8 +1,10 @@
 Cypress.Commands.add('login', (
-    user = Cypress.env('user_name'),
-    password = Cypress.env('user_password'),
+    requestedUser,
+    requestedPassword,
     { cacheSession = true } = {},
-  ) => {
+  ) => cy.env(['user_name', 'user_password'], { log: false }).then(({ user_name, user_password }) => {
+    const user = requestedUser ?? user_name
+    const password = requestedPassword ?? user_password
     const login = () => {
       cy.visit('/users/sign_in')
   
@@ -27,7 +29,7 @@ Cypress.Commands.add('login', (
     } else {
       login()
     }
-  })
+  }))
 
 Cypress.Commands.add('logout', () => {
     cy.get('.qa-user-avatar').click()
@@ -41,10 +43,16 @@ Cypress.Commands.add('gui_createProject', project => {
     cy.get('#project_description').type(project.description)
     cy.get('.qa-initialize-with-readme-checkbox').check()
     cy.contains('Create project').click()
+    cy.env(['user_name'], { log: false }).then(({ user_name }) => {
+      cy.location('pathname').should('eq', `/${user_name}/${project.name}`)
+      cy.api_trackProject(user_name, project.name)
+    })
   })
   
   Cypress.Commands.add('gui_createIssue', issue => {
-    cy.visit(`/${Cypress.env('user_name')}/${issue.project.name}/issues/new`)
+    cy.env(['user_name'], { log: false }).then(({ user_name }) => {
+      cy.visit(`/${user_name}/${issue.project.name}/issues/new`)
+    })
   
     cy.get('.qa-issuable-form-title').type(issue.title)
     cy.get('.qa-issuable-form-description').type(issue.description)

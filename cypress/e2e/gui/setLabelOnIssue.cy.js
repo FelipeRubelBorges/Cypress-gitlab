@@ -4,26 +4,27 @@ const options = { env: { snapshotOnly: true } }
 
 describe('Set label on issue', options, () => {
   const issue = {
-    title: `issue-${faker.datatype.uuid()}`,
-    description: faker.random.words(3),
+    title: `issue-${faker.string.uuid()}`,
+    description: faker.lorem.words(3),
     project: {
-      name: `project-${faker.datatype.uuid()}`,
-      description: faker.random.words(5)
+      name: `project-${faker.string.uuid()}`,
+      description: faker.lorem.words(5)
     }
   }
 
   const label = {
-    name: `label-${faker.random.word()}`,
+    name: `label-${faker.lorem.word()}`,
     color: '#ffaabb'
   }
 
   beforeEach(() => {
-    cy.api_deleteProjects()
     cy.login()
     cy.api_createIssue(issue)
       .then(response => {
         cy.api_createLabel(response.body.project_id, label)
-        cy.visit(`${Cypress.env('user_name')}/${issue.project.name}/issues/${response.body.iid}`)
+        cy.env(['user_name'], { log: false }).then(({ user_name }) => {
+          cy.visit(`${user_name}/${issue.project.name}/issues/${response.body.iid}`)
+        })
       })
   })
 

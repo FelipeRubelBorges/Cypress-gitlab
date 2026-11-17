@@ -5,11 +5,11 @@ describe('Create issue', () => {
 
   it('successfully', () => {
     const issue = {
-      title: `issue-${faker.datatype.uuid()}`,
-      description: faker.random.words(3),
+      title: `issue-${faker.string.uuid()}`,
+      description: faker.lorem.words(3),
       project: {
-        name: `project-${faker.datatype.uuid()}`,
-        description: faker.random.words(5)
+        name: `project-${faker.string.uuid()}`,
+        description: faker.lorem.words(5)
       }
     }
 
