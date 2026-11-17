@@ -1,5 +1,5 @@
-Cypress.Commands.add('cloneViaSSH', project => {
-    const domain = Cypress.config('baseUrl').replace('http://', '')
-  
-    cy.exec(`cd cypress/downloads/ && git clone git@${domain}:${Cypress.env('user_name')}/${project.name}.git`)
-  })
+Cypress.Commands.add('cloneViaSSH', project =>
+  cy.env(['user_name'], { log: false }).then(({ user_name }) =>
+    cy.task('cloneGitLabProject', { user: user_name, project: project.name }, { log: false })
+  )
+)
